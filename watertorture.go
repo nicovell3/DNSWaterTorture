@@ -50,7 +50,7 @@ func attack(wg *sync.WaitGroup, domain, dnsServer string, count, delay int) {
 			fmt.Println("error resolving "+currentSubdomain, err)
 		}
 		cancel()
-		time.Sleep(time.Duration(int64(delay) * int64(time.Millisecond)))
+		time.Sleep(time.Duration(delay) * time.Millisecond)
 		if count > 0 {
 			i++
 		}
@@ -90,21 +90,20 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
-		} else {
-			defer file.Close()
-			scanner := bufio.NewScanner(file)
-			for scanner.Scan() {
-				serversList = append(serversList, scanner.Text())
-			}
-			if err := scanner.Err(); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			serversList = append(serversList, scanner.Text())
+		}
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	}
 
 	if len(serversList) == 0 {
-		serversList = append(serversList, *initialDNS)
+		serversList = []string{*initialDNS}
 	}
 
 	fmt.Println("Running attack against ", serversList)

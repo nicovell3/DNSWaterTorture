@@ -4,13 +4,13 @@ This program should be used to perform load tests on DNS servers you control
 
 To build, just run:
 
-```
+```bash
 go build watertorture
 ```
 
 Usage:
 
-```
+```bash
 go run watertorture.go -h
 Usage of /tmp/go-build097542102/b001/exe/watertorture:
   -count int
@@ -27,14 +27,17 @@ Usage of /tmp/go-build097542102/b001/exe/watertorture:
 exit status 2
 ```
 
-Example usage:
-```
+A more exhaustive DNS server list can be found at https://public-dns.info/nameservers.txt
 
+Example usage (just to test, it should not affect anything):
+
+```bash
+go run watertorture.go -count 2 -f dnsservers.txt -delay 10000 -t google.com
 ```
 
 ## Bind9 server configuration (for tests)
 
-```
+```bash
 domain=example.com
 publicip=127.0.0.1
 cat << EOF > /etc/default/bind9
